@@ -1,0 +1,15 @@
+## Features
+- [x] 1.0.0
+
+## Potential Improvements
+- pricing calculation: different rates for different rental periods, exclude weekends, etc.
+- add more tests
+- better authentication
+
+## Known Issues
+- no known issues
+
+## lessons learned
+- troubleshooting well. favorites feature took me 6hr when i estimated 1hr. much of that was debugging. 
+- JWT authentication
+- React strict mode
