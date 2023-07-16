@@ -25,9 +25,6 @@ logs/
 # Ignore user uploads or generated content
 /uploads/
 
-# Ignore database files (if applicable)
-/database/
-
 # Ignore test coverage reports
 /coverage/
 
