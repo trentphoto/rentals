@@ -50,22 +50,16 @@ export default function Footer() {
               <FooterListItem name="How It Works" link="/how-it-works" />
               <FooterListItem name="Cancellation Policy" link="/cancellation-policy" />
               <FooterListItem name="Contact Us" link="/contact" />
+              <FooterListItem name="Privacy Policy" link="/privacy-policy" />
             </ul>
 
           </div>
 
           <div className='h-px w-full bg-black'></div>
 
-          <div className='flex flex-col justify-between gap-8 md:flex-row text-sm'>
+          <div className='flex flex-col justify-between gap-8 md:flex-row text-xs text-gray-400'>
             <div className='flex flex-col gap-8 md:flex-row'>
-              <Link
-                className='transition-colors hover:text-gray-900'
-                href='/privacy-policy'
-              >
-                Privacy Policy
-              </Link>
-              <span>Terms of Use</span>
-              <span>Sitemap</span>
+              <span>Made with ❤️ in Washington, DC</span>              
             </div>
 
           </div>

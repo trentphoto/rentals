@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import GrayBarSection from '../../components/layout/GrayBarSection'
 import Layout from '../../components/layout/Layout'
 import Seo from '../../components/Seo'
@@ -115,7 +115,7 @@ export default function SinglePage() {
         })
     }
     
-    React.useEffect(() => {
+    useEffect(() => {
 
         // Fetch product from api by slug
         const base = process.env.NEXT_PUBLIC_API_URL
