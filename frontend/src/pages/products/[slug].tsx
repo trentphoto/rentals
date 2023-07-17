@@ -36,6 +36,9 @@ export default function SinglePage() {
     const [productData, setProductData] = React.useState<Product | null>(null)
     const [addedToCart, setAddedToCart] = React.useState(false)
 
+    const rentalDays = (selectedDates.from && selectedDates.to) ? Math.ceil((selectedDates.to.getTime() - selectedDates.from.getTime()) / (1000 * 3600 * 24)) : null
+    const totalCost = (selectedDates.from && selectedDates.to && productData) ? Math.ceil((selectedDates.to.getTime() - selectedDates.from.getTime()) / (1000 * 3600 * 24)) * productData.price_per_day : null
+
     // handle add to cart button click
     const handleAddToCart = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -223,22 +226,26 @@ export default function SinglePage() {
 
                             <div className="flex items-center gap-8 mb-8">
                                 {
-                                    selectedDates.from && selectedDates.to ? (
+                                    rentalDays && rentalDays > 0 ? (
                                         <>
                                             <p className="text-xl">
                                                 <span className="font-bold">Rental Days:</span> {
-                                                    Math.ceil((selectedDates.to.getTime() - selectedDates.from.getTime()) / (1000 * 3600 * 24))
+                                                    rentalDays   
                                                 }
                                             </p>
                                             <p className="text-xl">
                                                 <span className="font-bold">Total cost:</span> ${
-                                                    Math.ceil((selectedDates.to.getTime() - selectedDates.from.getTime()) / (1000 * 3600 * 24)) * productData.price_per_day
+                                                    totalCost
                                                 }
                                             </p>
                                         </>
                                     ) : (
                                         <p className="text-xl">
-                                            Select dates above to view pricing.
+                                             {
+                                                rentalDays && rentalDays <= 0
+                                                    ? 'Error: Rental days must be more than 0.'
+                                                    : 'Select dates above to view pricing.'
+                                            }
                                         </p>
                                     )
                                 }
