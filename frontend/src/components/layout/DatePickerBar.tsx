@@ -14,11 +14,11 @@ export default function DatePickerBar() {
                     <div className="flex flex-col md:flex-row items-center">
                         <div className="flex items-center mb-4 md:mb-0">
                             <label className="mr-4">From:</label>
-                            <DatePicker date={selectedDates.from} handleChange={(date: Date) => updateSelectedDates(date, selectedDates.to)} />
+                            <DatePicker minDate={new Date()} date={selectedDates.from} handleChange={(date: Date) => updateSelectedDates(date, selectedDates.to)} />
                         </div>
                         <div className="flex items-center">
                             <label className="mx-4">To:</label>
-                            <DatePicker date={selectedDates.to} handleChange={(date: Date) => updateSelectedDates(selectedDates.from, date)} />
+                            <DatePicker minDate={selectedDates.from} date={selectedDates.to} handleChange={(date: Date) => updateSelectedDates(selectedDates.from, date)} />
                         </div>
                     </div>
                     <div className="flex items-center">

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import Layout from '../components/layout/Layout'
 import GrayBarSection from '@/components/layout/GrayBarSection'
 import { useRouter } from 'next/router'
@@ -7,32 +7,37 @@ import DashboardSidebar from '@/components/account/DashboardSidebar'
 import PersonalInfoSection from '@/components/account/PersonalInfoSection'
 import LogOutSection from '@/components/account/LogOutSection'
 import FavoritesSection from '@/components/account/FavoritesSection'
+import LoadingWrap from '@/components/layout/LoadingWrap'
 
 export default function AccountPage() {
 
+  const base = process.env.NEXT_PUBLIC_API_URL
+
   const [section, setSection] = React.useState('personalInfo')
+  const [user, setUser] = useState(null)
 
   let activeToken: string | null = ''
 
-  // sample user for now
-  const user = {
-    id: 1,
-    email: 'a@a.a',
-    firstName: 'John',
-    lastName: 'Apple'
-  }
-
   const router = useRouter()
 
-  // on component mount
-  useEffect(() => {
+  const handleInvalidToken = () => {
+    localStorage.removeItem('token')
+    localStorage.removeItem('user_id')
+    localStorage.removeItem('email')
+    router.push('/login')
+  }
+
+  const getUserFromBackend = () => {
+    // define headers
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    }
     
     // if token or email is missing from local storage
     if (!isLoggedIn()) { 
-      
       // redirect to login page
       router.push('/login')
-
     }
 
     // get variables from local storage 
@@ -40,7 +45,65 @@ export default function AccountPage() {
       activeToken = localStorage.getItem('token')
     }
 
+    // load load user from api
+    fetch(`${base}/user/current`, {
+      method: "GET",
+      headers
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        const returnedUser = data.result.message[0]
+        
+        setUser(returnedUser)
+      }
+    })
+  }
+
+  // on component mount
+  useEffect(() => {
+      getUserFromBackend()
   }, [])
+
+  // update user function
+  const updateUserField = (field: string, newValue: string) => {
+    // define headers
+    // can't do this in root component, since localStorage is null until page load
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    }
+
+    // PUT request to /users/update
+    fetch(`${base}/users/update`, {
+      method: "PUT",
+      headers, 
+      body: JSON.stringify({
+          [field]: newValue
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+      // if token is invalid, log user out
+      if (data.message === "Invalid token.") {
+        handleInvalidToken()
+      } else if (data.success) {
+        // handle success
+        alert(`Your ${field} has been updated successfully.`);
+        getUserFromBackend()
+      } else {
+        // handle error
+        alert(`An error occurred while updating your ${field}.`);
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      alert('An error occurred. Please try again.');
+    })
+
+  }
+
+  if (!user) return <LoadingWrap>Loading...</LoadingWrap>
 
   return (
     <Layout>
@@ -58,7 +121,7 @@ export default function AccountPage() {
 
             {/* main content */}
             <div className="md:col-span-3">
-              { section === 'personalInfo' ? <PersonalInfoSection user={user} /> : '' }
+              { section === 'personalInfo' ? <PersonalInfoSection user={user} updateUser={updateUserField} /> : '' }
               { section === 'logout' ? <LogOutSection user={user} /> : '' }
               { section === 'favorites' ? <FavoritesSection /> : '' }
             </div>

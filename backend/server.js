@@ -133,6 +133,35 @@ app.get('/users/:id', (req, res) => {
     dbRequest(query, params, res);
 });
 
+// get user by token
+app.get('/user/current', (req, res) => {
+
+    // get user id from token
+    let token = req.headers['authorization']
+
+    // Remove 'Bearer ' from start of string
+    if (token.startsWith('Bearer ')) {
+        token = token.slice(7, token.length).trimLeft();
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, data) => {
+        if (err) {
+            // Forbidden
+            return res.status(403).json({valid: false, message: 'Invalid token.'});
+        } else {
+            const query = "SELECT * FROM users WHERE id = ?";
+            params = [data.id];
+            dbRequest(query, params, res, (result) => {
+                if (result.status == 200) {
+                    res.status(200).json({message: `User found.`, success: true, result });
+                } else {
+                    res.status(500).json({message: `No user found.`, success: false });
+                }
+            })
+        }
+    });
+});
+
 // get user by email
 app.get('/users/email/:email', (req, res) => {
     const query = "SELECT * FROM users WHERE email = ?";
@@ -152,12 +181,48 @@ app.post('/users', (req, res) => {
 });
 
 // update user by id
-app.put('/users/:id', (req, res) => {
-    const query = "UPDATE users SET email = ?, password = ?, updated_at = ? WHERE id = ?";
-    time = new Date().toISOString();
-    params = [req.body.email, req.body.password, time, req.params.id];
-    dbRequest(query, params, res);
-});
+// app.put('/users/:id', (req, res) => {
+//     const query = "UPDATE users SET email = ?, password = ?, updated_at = ? WHERE id = ?";
+//     time = new Date().toISOString();
+//     params = [req.body.email, req.body.password, time, req.params.id];
+//     dbRequest(query, params, res);
+// });
+
+// update user by token
+app.put('/users/update', (req, res) => {
+    // get user id from token
+    let token = req.headers['authorization']
+
+    // Remove 'Bearer ' from start of string
+    if (token.startsWith('Bearer ')) {
+        token = token.slice(7, token.length).trimLeft();
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, data) => {
+        if (err) {
+            // Forbidden
+            return res.status(403).json({valid: false, message: 'Invalid token.'});
+        } else {
+            try {
+                // go through each field to update
+                for (let field in req.body) {
+                    // if the user has this field, update the field
+                    const query = `UPDATE users SET ${field} = ? WHERE id=?`;
+                    const params = [req.body[field], data.id]
+                    dbRequest(query, params, res, (result) => {
+                        if (result.status == 200) {
+                            res.status(200).json({message: `User ${field} updated.`, success: true, result });
+                        } else {
+                            res.status(500).json({message: 'Error updating user.', success: false});  
+                        }
+                    })
+                }
+            } catch (error) {
+                return res.status(400).json({ error: 'Could not update user' });
+            }
+        }
+    })
+})
 
 // delete user by id
 app.delete('/users/:id', (req, res) => {

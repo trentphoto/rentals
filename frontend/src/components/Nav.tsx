@@ -97,7 +97,7 @@ export default function Nav() {
         setCartCount(data.data.message.length)
       }
     })
-    .catch(err => console.log(err))
+    .catch(err => console.error(err))
 
   }, [])
 

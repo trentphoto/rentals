@@ -42,7 +42,7 @@ export default function LoginPage() {
         router.push('/')
       } else {
         setLoginError(data.message)
-        console.log(data);
+        // console.log(data);
         
       }
     } catch (error: any) {

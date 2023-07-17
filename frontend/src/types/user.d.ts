@@ -3,7 +3,7 @@ export type User = {
     password?: string;
     id: number;
     token?: string;
-    firstName?: string;
-    lastName?: string;
+    first_name?: string;
+    last_name?: string;
     phone?: string;
 }

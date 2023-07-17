@@ -13,22 +13,7 @@ import { DatePickerContext } from '@/lib/DatePickerContext'
 import { DatePickerContextType } from '@/types/datepicker';
 import FavoriteHeart from '@/components/FavoriteHeart'
 import clsxm from '@/lib/clsxm'
-
-
-function LoadingWrap({ children }: { children: React.ReactNode }){
-    return (
-        <>
-            <Layout>
-                <Seo />
-                <div className="container">
-                    <div className="flex justify-center items-center h-screen">
-                        { children }
-                    </div>
-                </div>
-            </Layout>
-        </>
-    )
-}
+import LoadingWrap from '@/components/layout/LoadingWrap'
 
 export default function SinglePage() {
 

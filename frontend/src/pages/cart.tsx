@@ -78,7 +78,7 @@ export default function CartPage() {
       .then(data => {
         setCartItems(data.data.message)
       })
-      .catch(err => console.log(err))
+      .catch(err => console.error(err))
 
   }, [])
 
@@ -106,7 +106,7 @@ export default function CartPage() {
         setCartItems(getData.data.message)
       })
     })
-    .catch(err => console.log(err))
+    .catch(err => console.error(err))
   }
 
   // handle checkout
@@ -122,7 +122,7 @@ export default function CartPage() {
     })
     .then(res => res.json())
     .then(data => {
-      console.log(data);
+      // console.log(data);
       setCartItems(data.data.message)
     })
     .catch(err => console.log(err))
