@@ -29,10 +29,10 @@ CREATE TABLE reservations (
     user_id INTEGER NOT NULL,
     start_date DATETIME NOT NULL,
     end_date DATETIME NOT NULL,
-    status TEXT NOT NULL,
+    total_price INTEGER NOT NULL,
+    status TEXT DEFAULT 'pending', -- pending, confirmed, approved, rejected, canceled
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    total_price INTEGER NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
@@ -40,8 +40,6 @@ CREATE TABLE categories (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name VARCHAR(255) NOT NULL
 );
-
-ALTER TABLE users1 RENAME TO users;
 
 CREATE TABLE reservation_items (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

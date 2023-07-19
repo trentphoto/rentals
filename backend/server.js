@@ -390,12 +390,104 @@ app.delete('/cart/:item_id', (req, res) => {
 
 
 // convert cart to reservation
-app.post('/cart/checkout', (req, res) => {
-    const query = `INSERT INTO reservations (user_id, items, start_date, end_date, total_price, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?);`;
-    const time = new Date().toISOString();
-    params = [req.body.user_id, req.body.items, req.body.start_date, req.body.end_date, req.body.total_price, req.body.status, time, time];
-    dbRequest(query, params, res);
+// app.post('/cart/checkout', (req, res) => {
+//     const query = `INSERT INTO reservations (user_id, items, start_date, end_date, total_price, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?);`;
+//     const time = new Date().toISOString();
+//     params = [req.body.user_id, req.body.items, req.body.start_date, req.body.end_date, req.body.total_price, req.body.status, time, time];
+//     dbRequest(query, params, res);
+// });
+
+
+
+// checkout user's cart
+app.post('/checkout', (req, res) => {
+    // get user id from token
+    let token = req.headers['authorization']
+
+    // Remove 'Bearer ' from start of string
+    if (token.startsWith('Bearer ')) {
+        token = token.slice(7, token.length).trimLeft();
+    }
+
+    // verify token
+    jwt.verify(token, process.env.JWT_SECRET, (err, data) => {
+        if (err) {
+            // Forbidden
+            res.status(403).json({valid: false, message: 'Invalid token.'});
+        } else {
+            // OK - token is valid
+            const userId = data.id;
+            // start a transaction
+            db.run("BEGIN TRANSACTION;", [], (err) => {
+                if(err){
+                    res.status(500).json({message: 'Error starting transaction.', success: false});
+                    return;
+                }
+                // insert into reservations
+                let query = "INSERT INTO reservations (user_id, total_price, start_date, end_date, status) VALUES (?, ?, ?, ?, ?);";
+                const params = [userId, req.body.total_price, req.body.start_date, req.body.end_date, 'pending']; // user_id, total_price, start_date, end_date, status
+                db.run(query, params, function(err){
+                    if(err){
+                        res.status(500).json({message: 'Error inserting into reservations.', success: false});
+                        db.run("ROLLBACK;");
+                        return;
+                    }
+                    let reservationId = this.lastID;
+                    // get cart items
+                    let cartItemsQuery = "SELECT * FROM cart_items WHERE cart_id = (SELECT id FROM cart WHERE user_id = ?);";
+                    db.all(cartItemsQuery, [userId], (err, cartItems) => {
+                        if (err) {
+                            res.status(500).json({message: 'Error getting cart items.', success: false});
+                            db.run("ROLLBACK;");
+                            return;
+                        }
+                        // add each item in the cart to the reservation
+                        console.log('adding each cart item to reservation...');
+                        let itemsProcessed = 0;
+                        cartItems.forEach((item) => {
+                            let reservationItemsQuery = "INSERT INTO reservation_items (reservation_id, inventory_id, quantity) VALUES (?,?,?);";
+                            db.run(reservationItemsQuery, [reservationId, item.inventory_id, item.quantity], (err) => {
+                                if(err){
+                                    res.status(500).json({message: 'Error inserting into reservation items.', success: false});
+                                    db.run("ROLLBACK;");
+                                    return;
+                                }
+                                itemsProcessed++;
+                                if(itemsProcessed === cartItems.length) {
+                                    // empty the cart
+                                    let emptyCartQuery = "DELETE FROM cart_items WHERE cart_id = (SELECT id FROM cart WHERE user_id = ?);";
+                                    db.run(emptyCartQuery, [userId], (err) => {
+                                        if(err){ 
+                                            res.status(500).json({message: 'Error emptying cart.', success: false});
+                                            db.run("ROLLBACK;");
+                                            return;
+                                        }
+                                        console.log('committing transaction...');
+                                        // commit transaction
+                                        db.run("COMMIT;", [], (err) => {
+                                            if(err){
+                                                res.status(500).json({message: 'Error committing transaction.', success: false});
+                                                db.run("ROLLBACK;");
+                                                return;
+                                            }
+                                            res.status(200).json({message: 'Checkout successful.', success: true});
+                                        });
+                                    });
+                                }
+                            });
+                        });
+                    });
+                });
+            });
+        }
+    });
 });
+
+
+
+
+
+
 
 // ----- end cart apis -----
 

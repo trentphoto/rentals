@@ -11,5 +11,14 @@
 
 ## lessons learned
 - troubleshooting well. favorites feature took me 6hr when i estimated 1hr. much of that was debugging. 
+
+## Concepts practiced
 - JWT authentication
 - React strict mode
+- component-based architcture for modular, reusable, and scalable UI
+- React hooks
+- React context API
+- NextJS router 
+- API routes using Node.js backend
+- Sqlite database
+- 

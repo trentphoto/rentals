@@ -7,6 +7,8 @@ import { Product } from '@/types/products';
 import { classesForCustomButtons } from '@/components/links/ButtonLink';
 import Link from 'next/link';
 import NextImage from '@/components/NextImage';
+import { DatePickerContextType } from '@/types/datepicker';
+import { DatePickerContext } from '@/lib/DatePickerContext';
 
 const CartListItem = ({ item, onDelete, ...props }: { item: Product, onDelete: (id: number) => void }) => {
 
@@ -60,6 +62,8 @@ const CartListItem = ({ item, onDelete, ...props }: { item: Product, onDelete: (
 export default function CartPage() {
   const base = process.env.NEXT_PUBLIC_API_URL
 
+  const { selectedDates, updateSelectedDates } = React.useContext<DatePickerContextType>(DatePickerContext)
+
   // load cart items from /api/cart
   const [cartItems, setCartItems] = React.useState([])
 
@@ -110,22 +114,36 @@ export default function CartPage() {
   }
 
   // handle checkout
-  const handleCheckout = () => {
+  const handleCheckout = (e: React.FormEvent<HTMLFormElement>) => {
+
+    e.preventDefault()
+
     const headers = {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${localStorage.getItem('token')}`
     }
 
+    const body = JSON.stringify({
+      total_price: cartItems.reduce((acc: number, item: Product) => acc + item.price_per_day * Math.floor((new Date(item.end_date!).getTime() - new Date(item.start_date!).getTime()) / (1000 * 3600 * 24)), 0),
+      start_date: selectedDates.from,
+      end_date: selectedDates.to,
+    })
+
     fetch(`${base}/checkout`, {
       method: 'POST',
-      headers
+      headers,
+      body
     })
     .then(res => res.json())
     .then(data => {
-      // console.log(data);
-      setCartItems(data.data.message)
+      if (data.success) {
+        alert('Checkout successful. Please check your email.')
+        setCartItems([])
+      } else {
+        alert('Checkout failed')
+      }
     })
-    .catch(err => console.log(err))
+    .catch(err => console.error(err))
   }
 
   return (
@@ -175,6 +193,19 @@ export default function CartPage() {
                           cartItems.reduce((acc: number, item: Product) => acc + item.price_per_day * Math.floor((new Date(item.end_date!).getTime() - new Date(item.start_date!).getTime()) / (1000 * 3600 * 24)), 0)
                           }
                       </p>
+                      {
+                        selectedDates.from && selectedDates.to ? (
+                          <>
+                            <hr className='mb-4' />
+                            <p className='text-xl mb-4'><span className="font-bold">From:</span> {selectedDates.from!.toLocaleDateString()}</p>
+                            <br />
+                            <p className='text-xl mb-4'><span className="font-bold">To:</span> {selectedDates.to!.toLocaleDateString()}</p>
+                            <div className="mb-8" />
+                          </>
+                        ) : ''
+                      }
+
+                      
 
                       <form onSubmit={handleCheckout}>
                           <button type="submit" className={classesForCustomButtons + " w-full"}>
