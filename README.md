@@ -13,7 +13,6 @@
 - Node.js + Express backend
 - SQL + SQLite database
 - JSONWebToken for authentication
-- 
 
 ## Design Decisions
 1. **Component Abstraction:** In order to increase modularity and reusability within the code, many components have been abstracted and reused multiple times. This design decision was made to promote a DRY (Don't Repeat Yourself) codebase, and it also facilitates easier debugging and updates.
@@ -31,17 +30,20 @@
 
 ## Known Issues
 - Currently the app does not process payments as part of the checkout process.
+- Currently only runs locally. I plan to deploy it to a web server in the future.
+- There are a few issues with the date picker I would like to tighten up. It works, but a few edge cases need to be accounted for.
+- When adding to cart, the Nav doesn't update the Cart count until the next page load. I plan to build out a solution to use the Context API to keep track of the cart, which would solve this issue.
+- Auth token expires after 1hr, but the app doesn't immediately log the user out. I would like to implement this but am still thinking on the most elegant way to do it.
 
-## lessons learned
-- troubleshooting well. favorites feature took me 6hr when i estimated 1hr. much of that was debugging. 
+## Lessons Learned
+- Importance of troubleshooting well. I spent a lot of time debugging, and this taught me the importance of thinking abuot my process and having a specific algorithm and way of going about the troubleshooting process.
+- Underestimating the amount of time it takes to build a feature. For example, when I set out to build the favorites feature, I estimated 1hr for it, but it took me almost 6. On the other hand, once I developed a strong mental model for how to implement a certain query, reusing that model or design pattern elsewhere in the app was much quicker (a good example was using the user's JWT token to get the user ID and corresponding data). 
 
 ## Concepts practiced
-- JWT authentication
-- React strict mode
-- component-based architcture for modular, reusable, and scalable UI
-- React hooks
-- React context API
-- NextJS router 
-- API routes using Node.js backend
-- Sqlite database
-- 
+- JWT authentication. Creating a user account, logging user in and out with JWTs. Also, the API endpoints don't need the user's ID included in the req url. They look it up using the token to get the user's ID and pass that to whatever SQL query is needed for that particular endpoint. 
+- React strict mode. Hadn't used this too much previously. The main thing to note here is that in Strict Mode, React renders each component twice instead of once. This threw me off at first (why am I seeing two identical console.logs?) but this was good experience for future work in React.
+- Component-based architcture for modular, reusable, and scalable UI. Anytime I wrote the same code or copy/pasted anything, I thought about how I could abstract it. I'm particularly proud of how the Account page looks - it's just 22 lines including comments, almost fully abstracted into custom components.
+- React hooks. I used useEffect and useState a lot, as usual for me. But I also got more familiar with Context, with its Provider component and useContext hook. In the future, one way this app can be improved is by integrating the app's Context state more tightly with the SQL backend - which can be done via the updateContext function in the main createContext file.
+- NextJS router. Specifically, using the useRouter hook to get the url param for the single product page.
+- Creating API routes using Node.js backend. This was very new for me but this project provided extensive practice with all 4 CRUD types.
+- Sqlite database. Making SQL queries in API endpoint functions and manipulating the data was a lot of fun. The Cart query and the Reservations query both get a little crazy, accessing several tables with several inner joins. Although this was only implemented locally, a future step can be to deploy this to something like AWS, Google Cloud, or DigitalOcean. 
