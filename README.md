@@ -3,6 +3,7 @@
 #### Description:  A full-stack web application I built for my [Harvard CS50 final project](https://cs50.harvard.edu/x/2023/project/).
 
 ## Features & Functionality
+- Browse photography equipment to rent, select dates, add to cart, and check out. Register, log in, favorite items, and view your reservations.
 - Authentication: users can create an account, log in, and log out. Each request to the backend is validated with a JSON Web Token, stored in the browser's LocalStorage.
 - DatePicker: the DatePicker component uses React's Context API to persist the user's date selection across the application.
 - Shopping cart: users can add and remove items from their cart.
