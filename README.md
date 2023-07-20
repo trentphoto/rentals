@@ -1,5 +1,5 @@
 # DC Camera Rentals Website
-#### Video Demo:  https://youtu.be/lSc0Ve-KKdw
+#### Video Demo:  https://youtu.be/NJRtj43n2mo
 #### Description:  A full-stack web application I built for my [Harvard CS50 final project](https://cs50.harvard.edu/x/2023/project/).
 
 ## Features & Functionality
