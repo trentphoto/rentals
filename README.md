@@ -16,6 +16,7 @@
 - Node.js + Express backend
 - SQL + SQLite database
 - JSONWebToken for authentication
+- TailwindCSS for styling
 
 ## Design Decisions
 1. **Component Abstraction:** In order to increase modularity and reusability within the code, many components have been abstracted and reused multiple times. This design decision was made to promote a DRY (Don't Repeat Yourself) codebase, and it also facilitates easier debugging and updates.
