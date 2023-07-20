@@ -232,11 +232,48 @@ app.delete('/users/:id', (req, res) => {
 });
 
 // reservation apis
+
+const reservationsQuery = `SELECT users.email,reservations.id,inventory.name,reservations.start_date,reservations.end_date,reservations.total_price 
+FROM reservations 
+INNER JOIN reservation_items ON reservation_items.reservation_id=reservations.id 
+INNER JOIN inventory ON inventory.id=reservation_items.inventory_id
+INNER JOIN users ON users.id=reservations.user_id
+WHERE users.id=?;`; 
+
 // get reservations by user id
 app.get('/reservations/user/:user_id', (req, res) => {
     const query = "SELECT * FROM reservations WHERE user_id = ?";
     params = [req.params.user_id];
     dbRequest(query, params, res);
+});
+
+// get reservations without user id
+app.get('/reservations', (req, res) => {
+    // get user id from token
+    let token = req.headers['authorization']
+
+    // Remove 'Bearer ' from start of string
+    if (token.startsWith('Bearer ')) {
+        token = token.slice(7, token.length).trimLeft();
+    }
+
+    // verify token
+    jwt.verify(token, process.env.JWT_SECRET, (err, data) => {
+        if (err) {
+            // Forbidden
+            res.status(403).json({valid: false, message: 'Invalid token.'});
+        } else {
+            // OK - token is valid
+            params = [data.id];
+            dbRequest(reservationsQuery, params, res, (data) => {
+                if (data.status == 200) {
+                    res.status(200).json({message: 'Reservations found.', success: true, data });
+                } else {
+                    res.status(500).json({message: 'Error getting reservations.', success: false});
+                }
+            });
+        }
+    });
 });
 
 // new reservation

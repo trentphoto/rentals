@@ -22,11 +22,7 @@ export default function DatePickerBar() {
                         </div>
                     </div>
                     <div className="flex items-center">
-                        <label className="mr-2">Sort by:</label>
-                        <select className="border border-gray-300 rounded-md p-2">
-                            <option value="price">Price</option>
-                            <option value="date">Date</option>
-                        </select>
+                        
                     </div>
                 </div>
             </GrayBarSection>

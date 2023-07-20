@@ -177,7 +177,7 @@ export default function CartPage() {
                     </div>
                   ) : (
                     <div className="flex flex-col items-center justify-center">
-                      <p>Your cart is empty</p>
+                      <p>Your cart is empty.</p>
                     </div>
                   )
                 }

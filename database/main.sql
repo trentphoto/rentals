@@ -148,3 +148,11 @@ SELECT inventory.name, users.email FROM cart
 INNER JOIN users ON cart.user_id=users.id
 INNER JOIN cart_items ON cart.id=cart_items.cart_id
 INNER JOIN inventory ON inventory.id=cart_items.inventory_id;
+
+-- query for reservations by user id
+SELECT users.email,reservations.id,inventory.name,reservations.start_date,reservations.end_date,reservations.total_price 
+FROM reservations 
+INNER JOIN reservation_items ON reservation_items.reservation_id=reservations.id 
+INNER JOIN inventory ON inventory.id=reservation_items.inventory_id
+INNER JOIN users ON users.id=reservations.user_id
+WHERE users.id=?;

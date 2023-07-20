@@ -8,6 +8,7 @@ import PersonalInfoSection from '@/components/account/PersonalInfoSection'
 import LogOutSection from '@/components/account/LogOutSection'
 import FavoritesSection from '@/components/account/FavoritesSection'
 import LoadingWrap from '@/components/layout/LoadingWrap'
+import ReservationsSection from '@/components/account/ReservationsSection'
 
 export default function AccountPage() {
 
@@ -15,6 +16,7 @@ export default function AccountPage() {
 
   const [section, setSection] = React.useState('personalInfo')
   const [user, setUser] = useState(null)
+  const [reservations, setReservations] = useState([])
 
   let activeToken: string | null = ''
 
@@ -60,9 +62,43 @@ export default function AccountPage() {
     })
   }
 
+  const loadReservations = () => {
+    // define headers
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    }
+    
+    // if token or email is missing from local storage
+    if (!isLoggedIn()) { 
+      // redirect to login page
+      router.push('/login')
+    }
+
+    // get variables from local storage 
+    if (typeof window !== 'undefined') {
+      activeToken = localStorage.getItem('token')
+    }
+
+    // load load user from api
+    fetch(`${base}/reservations`, {
+      method: "GET",
+      headers
+    })
+    .then(res => res.json())
+    .then(data => {
+      console.log(data);
+      
+      if (data.success) {
+        setReservations(data.data.message)
+      }
+    })
+  }
+
   // on component mount
   useEffect(() => {
       getUserFromBackend()
+      loadReservations()
   }, [])
 
   // update user function
@@ -122,8 +158,9 @@ export default function AccountPage() {
             {/* main content */}
             <div className="md:col-span-3">
               { section === 'personalInfo' ? <PersonalInfoSection user={user} updateUser={updateUserField} /> : '' }
-              { section === 'logout' ? <LogOutSection user={user} /> : '' }
+              { section === 'reservations' ? <ReservationsSection data={reservations} /> : '' }
               { section === 'favorites' ? <FavoritesSection /> : '' }
+              { section === 'logout' ? <LogOutSection user={user} /> : '' }
             </div>
 
           </div>

@@ -6,6 +6,7 @@ const DashboardSidebar = ({ activeSection, setSection }: { activeSection: string
       <>
         <div className="flex flex-col gap-2">
           <DashboardSidebarItem onClick={() => setSection('personalInfo')} name='Personal Information' active={activeSection === 'personalInfo'} />
+          <DashboardSidebarItem onClick={() => setSection('reservations')} name='Reservations' active={activeSection === 'reservations'} />
           <DashboardSidebarItem onClick={() => setSection('favorites')} name='Favorites' active={activeSection === 'favorites'} />
           <DashboardSidebarItem onClick={() => setSection('logout')} name='Log Out' active={activeSection === 'logout'} />
         </div>

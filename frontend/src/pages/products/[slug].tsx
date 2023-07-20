@@ -4,7 +4,7 @@ import Layout from '../../components/layout/Layout'
 import Seo from '../../components/Seo'
 import UnderlineLink from '../../components/links/UnderlineLink'
 import NextImage from '../../components/NextImage'
-import { classesForCustomButtons } from '../../components/links/ButtonLink'
+import ButtonLink, { classesForCustomButtons } from '../../components/links/ButtonLink'
 import { useRouter } from 'next/router'
 import DatePicker from '../../components/DatePicker'
 import { Product } from '@/types/products'
@@ -280,22 +280,13 @@ export default function SinglePage() {
                     </div>
                 </section>
 
-                <section>
+                <section className='py-20 bg-gray-50 mb-12'>
                     <div className="container">
                         {/* 4 easy steps to rentals - graphic */}
-                        <div className="flex flex-col justify-center items-center mb-20">
+                        <div className="flex flex-col justify-center items-start">
                             <h2 className="text-4xl font-serif font-normal mb-2">4 Easy Steps to Renting</h2>
-                            <p className="text-stone-300 mb-12">Renting is easy with our 4 step process.</p>
-                            <div className="grid grid-cols-2">
-                                <div className="flex flex-col justify-center items-center">
-                                    <div className="flex justify-center items-center rounded-full bg-stone-300 w-20 h-20 mb-4">
-                                        <p className="text-white text-2xl font-bold">1</p>
-                                    </div>
-                                    <p className="text-center">Choose your rental dates.</p>
-                                </div>
-                                    
-                                        
-                            </div>
+                            <p className="text-stone-500 mb-12">Renting is easy with our 4 step process.</p>
+                            <ButtonLink href='/how-it-works'>How It Works</ButtonLink>
                         </div>
                     </div>
                 </section>
