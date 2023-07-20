@@ -1,5 +1,6 @@
 # DC Camera Rentals Website
-A full-stack web application I built for my [Harvard CS50 final project](https://cs50.harvard.edu/x/2023/project/).
+#### Video Demo:  https://youtu.be/lSc0Ve-KKdw
+#### Description:  A full-stack web application I built for my [Harvard CS50 final project](https://cs50.harvard.edu/x/2023/project/).
 
 ## Features & Functionality
 - Authentication: users can create an account, log in, and log out. Each request to the backend is validated with a JSON Web Token, stored in the browser's LocalStorage.
